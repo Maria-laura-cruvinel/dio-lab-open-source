@@ -1,0 +1,68 @@
+# 🍦 Gelato Mágico - Previsão de Vendas com Machine Learning
+
+Este projeto foi desenvolvido como parte do desafio da **DIO**, aplicando conceitos de **Regressão Linear** e **MLOps** para otimizar a produção de uma sorveteria litorânea.
+
+## 🚀 O Desafio
+Prever a quantidade de sorvetes vendidos com base na temperatura ambiente para reduzir desperdícios e maximizar lucros.
+
+## 🛠️ Tecnologias Utilizadas
+- **Python 3.10+**
+- **Scikit-learn**: Para a construção do modelo preditivo.
+- **MLflow**: Para rastreamento de experimentos e gerenciamento de modelos.
+- **Streamlit**: Para criação do dashboard interativo.
+- **Pandas/Numpy**: Manipulação de dados.
+
+## 📊 Insights e Aprendizados
+1. **Correlação Forte**: Observou-se que a temperatura explica mais de 90% da variação nas vendas ($R^2 > 0.90$).
+2. **Escalabilidade**: Ao utilizar MLflow, garantimos que cada versão do modelo seja registrada com suas respectivas métricas, facilitando o rollback se necessário.
+3. **Decisão Baseada em Dados**: O modelo permite ao gestor da "Gelato Mágico" antecipar a compra de insumos em dias de ondas de calor.
+
+## 🏗️ Como executar
+1. Instale as dependências: `pip install -r requirements.txt`
+2. Execute o treinamento: `python train.py`
+3. Visualize os experimentos: `mlflow ui`
+
+
+
+
+
+
+import pandas as pd
+import mlflow
+import mlflow.sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# 1. Carregar dados fictícios
+data = {
+    'temperatura': [22, 25, 28, 30, 32, 35, 37, 20, 18, 24],
+    'vendas': [150, 200, 250, 280, 310, 380, 410, 120, 100, 190]
+}
+df = pd.DataFrame(data)
+
+X = df[['temperatura']]
+y = df['vendas']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 2. Configurar MLflow
+mlflow.set_experiment("Previsao_Gelato_Magico")
+
+with mlflow.start_run():
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    
+    predictions = model.predict(X_test)
+    rmse = mean_squared_error(y_test, predictions, squared=False)
+    r2 = r2_score(y_test, predictions)
+
+    # Registrar parâmetros e métricas
+    mlflow.log_param("model_type", "LinearRegression")
+    mlflow.log_metric("rmse", rmse)
+    mlflow.log_metric("r2", r2)
+    
+    # Salvar o modelo
+    mlflow.sklearn.log_model(model, "modelo_vendas_sorvete")
+    
+    print(f"Modelo treinado! RMSE: {rmse:.2f}, R2: {r2:.2f}")
