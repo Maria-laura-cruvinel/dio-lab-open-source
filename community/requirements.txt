@@ -1,0 +1,18 @@
+# Interface
+streamlit==1.32.2
+
+# Leitura de PDF
+pypdf==4.0.2
+
+# Embeddings
+sentence-transformers==2.6.1
+torch>=2.1.0
+
+# Busca vetorial
+faiss-cpu==1.8.0
+
+# Base científica
+numpy==1.26.4
+
+# Variáveis de ambiente (opcional)
+python-dotenv==1.0.1
